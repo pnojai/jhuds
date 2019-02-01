@@ -114,3 +114,65 @@ h5write(c(12, 13, 14), "example.h5", "foo/A", index = list(1:3, 1))
 # This is a READ, not an LS.
 # The index for writing can also be used for reading.
 h5read("example.h5", "foo/A")
+
+# 2. Web scraping.
+# Raw.
+con <- url("http://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en")
+htmlCode <- readLines(con)
+close(con)
+htmlCode
+
+# Parsed.
+library(XML)
+url <- "http://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en"
+html <- htmlTreeParse(url, useInternalNodes = TRUE) 
+
+# Nope, Google redirects to HTTPS. Use RCurl.
+library(RCurl)
+URL.1 <- "https://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en"
+URL.2 <- getURL(URL.1)
+
+head(URL.2) # That has data in it.
+
+# Use the 2nd step URL. Now it works.
+html <- htmlTreeParse(URL.2, useInternalNodes = TRUE)
+html
+
+xpathSApply(html, "//title", xmlValue)
+
+# This doesn't work. Page doesn't use ID attributes in <TD> tags now.
+pathSApply(html, "//td[@id='col-citedby']", xmlValue)
+
+# Here are some table data tag values.
+xpathSApply(html, "//td", xmlValue)
+
+# GET from the httr package.
+library(httr); html2 <- GET(url)
+content2 <- content(html2, as = "text")
+parsedHTML <- htmlParse(content2, asText = TRUE)
+xpathSApply(html, "//title", xmlValue)
+
+# Accessing websites with passwords.
+pg2 <- GET("http://httpbin.org/basic-auth/user/passwd",
+           authenticate("user", "passwd"))
+pg2
+
+names(pg2)
+
+# Using handles.
+# If you save a handle, you have the authentication cookie and you can use it
+# to get to other pages with the authentication you saved.
+google <- handle("http://google.com")
+pg1 <- GET(handle = google, path = "/")
+pg2 <- GET(handle = google, path = "search")
+pg1
+
+# References
+# Good examples.
+# http://www.r-bloggers.com/?s=Web+Scraping
+# Help file, more good examples.
+# http://cran.r-project.org/web/packages/httr/httr.pdf
+
+# APIs
+# Usually use GET requests with specific URLs as arguments.
+# Usually need a developer account for the API.
