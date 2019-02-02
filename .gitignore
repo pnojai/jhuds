@@ -5,3 +5,4 @@ jhuds.Rproj
 .Ruserdata
 *~
 03_GetClean/Data/
+.httr-oauth
