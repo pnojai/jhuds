@@ -70,3 +70,54 @@ xyplot(y ~ x | f, panel = function(x, y, ...) {
 
 # qplot hides details, which is often useful.
 # ggplot is the core function and very flexible for doing things qplot cannot.
+
+library(ggplot2)
+str(mpg)
+
+qplot(displ, hwy, data = mpg)
+
+# Modifying aesthetics.
+
+qplot(displ, hwy, data = mpg, color = drv)
+
+# Add a statistic. Adding a geom.
+# A smoother, or loess.
+# The grey region is the 95% confidence interval.
+qplot(displ, hwy, data = mpg, geom = c("point", "smooth"))
+
+# qplot plots a histogram if you only provide one variable.
+qplot(hwy, data = mpg, fill = drv)
+
+# Facets. Like panels in lattice.
+# Takes a formula type parameter. Left of the tilde is number of rows of facets,
+# right is number of columns
+qplot(displ, hwy, data = mpg, facets = . ~ drv)
+qplot(hwy, data = mpg, facets = drv ~ ., binwidth = 2)
+
+# Mouse allergen and asthma cohort study.
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3889705/
+# The course has some sample data.
+# An R Data file doesn't get assigned to a variable. The variable is in the file, and the
+# file gets loaded into the environment.
+load(file = "./04_EDA/Data/maacs.Rda")
+str(maacs)
+# eno: Exhaled Nitric Oxide.
+head(maacs)
+
+qplot(log(eno), data = maacs)
+qplot(log(eno), data = maacs, fill = mopos)
+qplot(log(eno), data = maacs, geom = "density")
+qplot(log(eno), data = maacs, geom = "density", color = mopos)
+
+# Is exhaled nitric oxide related to fine particulate matter in the home.
+qplot(log(pm25), log(eno), data = maacs)
+
+# Separate the allergic
+qplot(log(pm25), log(eno), data = maacs, shape = mopos)
+qplot(log(pm25), log(eno), data = maacs, color = mopos)
+
+# Get a linear model in there.
+qplot(log(pm25), log(eno), data = maacs, color = mopos) + geom_smooth(method = "lm")
+
+# Let's split them out with facets.
+qplot(log(pm25), log(eno), data = maacs, facets = . ~ mopos) + geom_smooth(method = "lm")
