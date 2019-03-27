@@ -121,3 +121,35 @@ qplot(log(pm25), log(eno), data = maacs, color = mopos) + geom_smooth(method = "
 
 # Let's split them out with facets.
 qplot(log(pm25), log(eno), data = maacs, facets = . ~ mopos) + geom_smooth(method = "lm")
+
+# Basic components of a ggplot2 plot.
+# Data frame.
+# Aesthetic mapping.
+# geoms.
+# facets. For conditional plots.
+# stats.
+# scales.
+# coordinate system.
+
+# Building plot.
+# "Artist's palette."
+# Built up in layers.
+#   Plot the data.
+#   Add a summary.
+#   Metadata or annotation.
+
+str(maacs)
+
+# Back to the MAACS.
+# This data sample doesn't have bmicat.
+qplot(log(pm25), NocturnalSympt, data = maacs, facets = . ~ bmicat,
+      geom = c("point", "smooth"), method = "lm")
+
+g <- ggplot(maacs, aes(logpm25, NocturnalSympt)) # initial call to ggplot
+
+summary(g) # you can do this. (If you have real data.)
+
+# No plot yet. 
+p <- g + geom_point() # This will print.
+# or
+g + geom_point()
