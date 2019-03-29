@@ -153,3 +153,59 @@ summary(g) # you can do this. (If you have real data.)
 p <- g + geom_point() # This will print.
 # or
 g + geom_point()
+
+# He demonstrates two trend visualizations, though I can't render them here without data.
+g + geom_point() + geom_smooth() # Defaults to loess.
+g + geom_point() + geom_smooth(method = "lm") # Less noise at the ends
+                                              # where points are sparse.
+
+# Add a facet. In ggplot, you use a facet grid.
+# Factors are important here.
+# bmi is a two-level factor. It will plot two facets. It will also provide labels.
+g + geom_point() + facet_grid(. ~ bmicat) + geom_smooth(method = "lm")
+
+# Lesson here. Easier if data is organized and labelled before plotting.
+
+# Annotation.
+# Labels: xlab(), ylab(), lab(). ggtitle().
+# Each of the geom functions has modifying options.
+# Global context modifications go in theme().
+#   Two of the standard themes:
+#      theme_gray(): default.
+#      theme_bw(): stark/plain.
+
+# Aesthetic modifications.
+g + geom_point(color = "steelblue", size = 4, alpha = 1/2) # Constants are NOT aesthetics!
+g + geom_point(aes(color = bmicat), size = 4, alpha = 1/2) # Here is an aesthetic,
+                                                           # mapping of data to an attribute.
+
+# Some labels.
+g + geom_point(aes(color = bmicat)) + labs(title = "MAAC Study") + 
+        labs(x = expression("log PM[2.5]"), y = "Nocturnal Symptoms")
+# He said he talked about the expression notation and the brackets making subscripts.
+# I don't know what video that is.
+
+# You can customize the smoother, too.
+g + geom_point(aes(color = bmicat), size = 2, alpha = 1/2) + 
+        geom_smooth(size = 4, linetype = 3, method = "lm", se = FALSE)
+# se is the confidence interval. I don't know what that stands for.
+
+# A different theme.
+g + geom_point(aes(color = bmicat)) + theme_bw(base_family = "Times")
+
+# Notes about axis limits.
+testdat <- data.frame(x = 1:100, y = rnorm(100))
+testdat[50, 2] <- 100 ## Outlier!
+plot(testdat$x, testdat$y, type = "l", ylim = c(-3, 3))
+g <- ggplot(testdat, aes(x = x, y = y))
+g + geom_line()
+
+# If you want to cut off the outlier in ggplot, it isn't obvious.
+g + geom_line() + ylim(-3, 3) # Outlier is missing. Oh, no, it subset the data.
+g + geom_line() + coord_cartesian(ylim = c(-3, 3)) # That did what I expected.
+# Now, how are you supposed to remember crap like that?
+
+# More complex example.
+# How does the relationship between PM 2.5 and nocturnal symptoms vary by BMI and NO2?
+# Unlike previous examples, NO2 is continuous. You can't condition on a conditional
+# variable. You need a categorical variable for conditioning. Use cut() for this.
