@@ -209,3 +209,44 @@ g + geom_line() + coord_cartesian(ylim = c(-3, 3)) # That did what I expected.
 # How does the relationship between PM 2.5 and nocturnal symptoms vary by BMI and NO2?
 # Unlike previous examples, NO2 is continuous. You can't condition on a conditional
 # variable. You need a categorical variable for conditioning. Use cut() for this.
+
+# Calculate the deciles of the data
+cutpoints <- quantile(maacs$logno2_new, seq(0, 1, length = 4), na.rm = TRUE)
+
+# Cut the data at the deciles and create a new factor variable.
+maacs$no2dec <- cut(maacs$no2_new, cutpoints)
+
+# See the levels of the factor variable.
+levels(maacs$no2dec)
+
+# Code for final plot, which--lamely--they don't enable me to run myself.
+# Set up ggplot with the data frame.
+g <- ggplot(maacs, aes(logpm25, NocturnalSypmt))
+
+# Add layers.
+g + geom_point(alpha = 1/3) # add points
+  + facet_wrap(bmicat ~ no2dec, nrow = 2, ncol = 4) # make panels
+  + geom_smooth(method = "lm", se = FALSE, col = "steelblue") # smoother; se means Standard Error
+  + theme_bw(base_family = "Avenir", base_size = 10) # change theme; non-default font and size
+  + labs(x = expression("log " * PM[2.5]))
+  + labs(y = "Nocturnal Symptoms")
+  + labs(title = "MAACS")
+
+# Quiz
+# 2
+library(nlme)
+library(lattice)
+xyplot(weight ~ Time | Diet, BodyWeight)
+
+# 7
+library(ggplot2)
+library(datasets)
+data("airquality")
+qplot(Wind, Ozone, data = airquality, facets = . ~ factor(Month))
+
+# 9
+library(ggplot2)
+library(ggplot2movies)
+
+g <- ggplot(airquality, aes(Wind, Ozone))
+print(g)
